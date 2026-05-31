@@ -1,0 +1,128 @@
+{
+  "types": [
+    { "key": "crud", "label": "CRUD" },
+    { "key": "import_export", "label": "文件导入导出" },
+    { "key": "scheduler", "label": "定时任务" },
+    { "key": "reporting", "label": "报表展示" },
+    { "key": "business_rules", "label": "业务规则/校验" },
+    { "key": "calculation_engine", "label": "复杂计算/计费" },
+    { "key": "data_processing", "label": "数据处理/聚合" },
+    { "key": "auth_permission", "label": "登录与权限" },
+    { "key": "integration_api", "label": "外部接口/第三方集成" },
+    { "key": "notification", "label": "消息通知" },
+    { "key": "workflow", "label": "流程/审批/状态机" },
+    { "key": "draft_publish", "label": "草稿/发布/版本管理" },
+    { "key": "search", "label": "搜索与筛选" },
+    { "key": "data_migration", "label": "数据迁移/初始化" },
+    { "key": "performance_cache", "label": "性能优化/缓存" },
+    { "key": "devops", "label": "部署/配置/CI-CD" },
+    { "key": "monitoring_logging", "label": "日志/监控/告警" }
+  ],
+  "matrix": {
+    "crud": [
+      { "key": "S", "dev_days": 1.0, "test_days": 0.5, "pm_days": 0.5 },
+      { "key": "M", "dev_days": 2.0, "test_days": 1.0, "pm_days": 0.5 },
+      { "key": "L", "dev_days": 4.0, "test_days": 2.0, "pm_days": 1.0 },
+      { "key": "XL", "dev_days": 7.0, "test_days": 3.0, "pm_days": 1.5 }
+    ],
+    "import_export": [
+      { "key": "S", "dev_days": 1.5, "test_days": 0.5, "pm_days": 0.5 },
+      { "key": "M", "dev_days": 3.0, "test_days": 1.0, "pm_days": 0.5 },
+      { "key": "L", "dev_days": 5.0, "test_days": 2.0, "pm_days": 1.0 },
+      { "key": "XL", "dev_days": 8.0, "test_days": 3.0, "pm_days": 1.5 }
+    ],
+    "scheduler": [
+      { "key": "S", "dev_days": 1.0, "test_days": 0.5, "pm_days": 0.5 },
+      { "key": "M", "dev_days": 2.5, "test_days": 1.0, "pm_days": 0.5 },
+      { "key": "L", "dev_days": 4.5, "test_days": 2.0, "pm_days": 1.0 },
+      { "key": "XL", "dev_days": 7.5, "test_days": 3.0, "pm_days": 1.5 }
+    ],
+    "reporting": [
+      { "key": "S", "dev_days": 1.0, "test_days": 0.5, "pm_days": 0.5 },
+      { "key": "M", "dev_days": 2.5, "test_days": 1.0, "pm_days": 0.5 },
+      { "key": "L", "dev_days": 4.5, "test_days": 2.0, "pm_days": 1.0 },
+      { "key": "XL", "dev_days": 7.0, "test_days": 3.0, "pm_days": 1.5 }
+    ],
+    "business_rules": [
+      { "key": "S", "dev_days": 1.0, "test_days": 0.5, "pm_days": 0.5 },
+      { "key": "M", "dev_days": 3.0, "test_days": 1.5, "pm_days": 0.5 },
+      { "key": "L", "dev_days": 5.5, "test_days": 3.0, "pm_days": 1.0 },
+      { "key": "XL", "dev_days": 9.0, "test_days": 4.5, "pm_days": 1.5 }
+    ],
+    "calculation_engine": [
+      { "key": "S", "dev_days": 1.5, "test_days": 0.5, "pm_days": 0.5 },
+      { "key": "M", "dev_days": 3.5, "test_days": 2.0, "pm_days": 0.5 },
+      { "key": "L", "dev_days": 6.5, "test_days": 3.5, "pm_days": 1.0 },
+      { "key": "XL", "dev_days": 10.0, "test_days": 5.0, "pm_days": 1.5 }
+    ],
+    "data_processing": [
+      { "key": "S", "dev_days": 1.0, "test_days": 0.5, "pm_days": 0.5 },
+      { "key": "M", "dev_days": 2.5, "test_days": 1.5, "pm_days": 0.5 },
+      { "key": "L", "dev_days": 5.0, "test_days": 3.0, "pm_days": 1.0 },
+      { "key": "XL", "dev_days": 8.5, "test_days": 4.5, "pm_days": 1.5 }
+    ],
+    "auth_permission": [
+      { "key": "S", "dev_days": 1.0, "test_days": 0.5, "pm_days": 0.5 },
+      { "key": "M", "dev_days": 2.5, "test_days": 1.0, "pm_days": 0.5 },
+      { "key": "L", "dev_days": 5.0, "test_days": 2.0, "pm_days": 1.0 },
+      { "key": "XL", "dev_days": 8.0, "test_days": 3.0, "pm_days": 1.5 }
+    ],
+    "integration_api": [
+      { "key": "S", "dev_days": 1.5, "test_days": 0.5, "pm_days": 0.5 },
+      { "key": "M", "dev_days": 3.5, "test_days": 1.5, "pm_days": 0.5 },
+      { "key": "L", "dev_days": 6.0, "test_days": 2.5, "pm_days": 1.0 },
+      { "key": "XL", "dev_days": 9.0, "test_days": 4.0, "pm_days": 1.5 }
+    ],
+    "notification": [
+      { "key": "S", "dev_days": 1.0, "test_days": 0.5, "pm_days": 0.5 },
+      { "key": "M", "dev_days": 2.0, "test_days": 1.0, "pm_days": 0.5 },
+      { "key": "L", "dev_days": 4.0, "test_days": 2.0, "pm_days": 1.0 },
+      { "key": "XL", "dev_days": 6.5, "test_days": 3.0, "pm_days": 1.5 }
+    ],
+    "workflow": [
+      { "key": "S", "dev_days": 1.5, "test_days": 0.5, "pm_days": 0.5 },
+      { "key": "M", "dev_days": 3.0, "test_days": 1.5, "pm_days": 0.5 },
+      { "key": "L", "dev_days": 6.0, "test_days": 3.0, "pm_days": 1.0 },
+      { "key": "XL", "dev_days": 9.0, "test_days": 4.0, "pm_days": 1.5 }
+    ],
+    "draft_publish": [
+      { "key": "S", "dev_days": 1.0, "test_days": 0.5, "pm_days": 0.5 },
+      { "key": "M", "dev_days": 2.5, "test_days": 1.0, "pm_days": 0.5 },
+      { "key": "L", "dev_days": 5.0, "test_days": 2.0, "pm_days": 1.0 },
+      { "key": "XL", "dev_days": 8.0, "test_days": 3.5, "pm_days": 1.5 }
+    ],
+    "search": [
+      { "key": "S", "dev_days": 1.0, "test_days": 0.5, "pm_days": 0.5 },
+      { "key": "M", "dev_days": 2.5, "test_days": 1.0, "pm_days": 0.5 },
+      { "key": "L", "dev_days": 4.5, "test_days": 2.0, "pm_days": 1.0 },
+      { "key": "XL", "dev_days": 7.5, "test_days": 3.0, "pm_days": 1.5 }
+    ],
+    "data_migration": [
+      { "key": "S", "dev_days": 1.5, "test_days": 0.5, "pm_days": 0.5 },
+      { "key": "M", "dev_days": 3.0, "test_days": 1.0, "pm_days": 0.5 },
+      { "key": "L", "dev_days": 5.5, "test_days": 2.0, "pm_days": 1.0 },
+      { "key": "XL", "dev_days": 8.5, "test_days": 3.0, "pm_days": 1.5 }
+    ],
+    "performance_cache": [
+      { "key": "S", "dev_days": 1.0, "test_days": 0.5, "pm_days": 0.5 },
+      { "key": "M", "dev_days": 2.5, "test_days": 1.0, "pm_days": 0.5 },
+      { "key": "L", "dev_days": 5.0, "test_days": 2.0, "pm_days": 1.0 },
+      { "key": "XL", "dev_days": 8.0, "test_days": 3.0, "pm_days": 1.5 }
+    ],
+    "devops": [
+      { "key": "S", "dev_days": 1.0, "test_days": 0.5, "pm_days": 0.5 },
+      { "key": "M", "dev_days": 2.0, "test_days": 1.0, "pm_days": 0.5 },
+      { "key": "L", "dev_days": 4.0, "test_days": 1.5, "pm_days": 1.0 },
+      { "key": "XL", "dev_days": 6.0, "test_days": 2.5, "pm_days": 1.5 }
+    ],
+    "monitoring_logging": [
+      { "key": "S", "dev_days": 1.0, "test_days": 0.5, "pm_days": 0.5 },
+      { "key": "M", "dev_days": 2.0, "test_days": 1.0, "pm_days": 0.5 },
+      { "key": "L", "dev_days": 4.0, "test_days": 2.0, "pm_days": 1.0 },
+      { "key": "XL", "dev_days": 6.5, "test_days": 3.0, "pm_days": 1.5 }
+    ]
+  },
+  "rule": {
+    "day_increment": 0.5
+  }
+}

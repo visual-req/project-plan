@@ -1,0 +1,41 @@
+# Getting Started
+
+## Start
+
+```bash
+./scripts/start.sh
+```
+
+Default port is 8010. Open: http://localhost:8010/
+
+## Use an external config.yaml
+
+```bash
+CONFIG=/path/to/config.yaml ./scripts/start.sh
+```
+
+Or:
+
+```bash
+.venv/bin/python -m backend.serve --config /path/to/config.yaml --port 8010
+```
+
+## LLM configuration
+
+1) Copy config
+- config.example.yaml -> config.yaml
+
+2) Key fields
+- llm.enabled: true
+- llm.base_url: OpenAI-compatible API URL
+- llm.api_key: API key
+- llm.model: model name
+
+## Usage
+
+1) Upload .docx (/api/upload)
+2) Run:
+- Decompose (/api/decompose)
+- Schedule (/api/schedule)
+- Estimate (/api/estimate)
+3) Download artifacts

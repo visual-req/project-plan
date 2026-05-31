@@ -1,0 +1,24 @@
+# マニュアル
+
+## 多言語
+
+- 右上の言語セレクタで 中文/日本語/English を切替
+- API リクエストの body に lang（zh-CN/ja-JP/en-US）を渡すと、プロンプトの出力言語が変わります
+
+## 音声
+
+- 右上で音声（Voice）と話者を選択して読み上げ
+- ブラウザの SpeechSynthesis を利用（未対応環境では非表示）
+
+## よくある問題
+
+### LLM が呼ばれていない
+
+既定は llm.enabled=false のため mock 出力です。
+LLM を有効にするには：
+- llm.enabled=true
+- llm.base_url / llm.api_key / llm.model を設定
+
+### module/feature が空
+
+分解結果は module/feature を含む想定です。モデル出力とプロンプトを確認してください。

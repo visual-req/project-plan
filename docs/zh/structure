@@ -1,0 +1,27 @@
+# 结构
+
+## backend/
+
+- main.py：FastAPI 路由与静态资源托管
+- serve.py：启动入口（支持 --config 指定外部配置）
+- app_config.py：读取 config.yaml，并准备 inputs/outputs 目录
+- doc_parser.py：docx -> 文本
+- decompose_service.py：分解逻辑 + 提示词
+- schedule_service.py：排期逻辑 + 提示词
+- estimate_service.py：估算逻辑 + 提示词
+- llm_client.py：OpenAI-compatible 调用 + mock 兜底
+- storage.py：JSON 原子写入与读取
+
+## frontend/
+
+- public/index.html：入口 HTML（CDN 引入 Vue/AntD/dayjs）
+- src/main.js：SFC Loader 启动并注册组件
+- src/App.vue：页面框架（Header + 工作区）
+- src/components/：通用组件
+- src/views/：分解/排期/估算视图
+
+## scripts/
+
+- start.sh：启动后端（同时托管前端）
+- start_backend.sh：同上（可通过 CONFIG/PORT/HOST 环境变量配置）
+- start_frontend.sh：同上（前端由后端托管）

@@ -1,0 +1,20 @@
+# Workflow
+
+1) Upload docx
+- Frontend calls /api/upload
+- Backend saves inputs_dir/{doc_id}.docx
+- Backend extracts requirement.txt to outputs_dir/{doc_id}/
+
+2) Decompose
+- /api/decompose (lang=zh-CN/ja-JP/en-US supported)
+- Runs backend/decompose_service.py and persists JSON
+
+3) Schedule
+- /api/schedule (lang supported)
+- Runs backend/schedule_service.py and persists JSON
+
+4) Estimate
+- /api/estimate (lang supported)
+- Runs backend/estimate_service.py and persists JSON
+
+Cache key is doc_id + lang, so repeated runs reuse persisted artifacts.

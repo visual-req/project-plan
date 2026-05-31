@@ -1,0 +1,27 @@
+# Structure
+
+## backend/
+
+- main.py: FastAPI routes + static hosting
+- serve.py: launcher (supports --config)
+- app_config.py: loads config.yaml and prepares inputs/outputs dirs
+- doc_parser.py: docx -> text
+- decompose_service.py: decomposition logic + prompt
+- schedule_service.py: scheduling logic + prompt
+- estimate_service.py: estimation logic + prompt
+- llm_client.py: OpenAI-compatible client + mock fallback
+- storage.py: JSON read/write utilities
+
+## frontend/
+
+- public/index.html: entry (CDN Vue/AntD/dayjs)
+- src/main.js: bootstraps SFC loader and registers components
+- src/App.vue: header + workspace layout
+- src/components/: shared components
+- src/views/: decompose/schedule/estimate views
+
+## scripts/
+
+- start.sh: start backend (also serves frontend)
+- start_backend.sh: same (CONFIG/PORT/HOST env supported)
+- start_frontend.sh: same (frontend is served by backend)

@@ -1,0 +1,41 @@
+# はじめに
+
+## 起動
+
+```bash
+./scripts/start.sh
+```
+
+既定ポートは 8010 です。http://localhost:8010/ を開きます。
+
+## 外部 config.yaml を指定
+
+```bash
+CONFIG=/path/to/config.yaml ./scripts/start.sh
+```
+
+または：
+
+```bash
+.venv/bin/python -m backend.serve --config /path/to/config.yaml --port 8010
+```
+
+## LLM 設定
+
+1) 設定ファイルをコピー
+- config.example.yaml -> config.yaml
+
+2) 主な項目
+- llm.enabled: true
+- llm.base_url: OpenAI-compatible API URL
+- llm.api_key: API キー
+- llm.model: モデル名
+
+## 利用手順
+
+1) .docx をアップロード（/api/upload）
+2) ボタンを実行：
+- 分解（/api/decompose）
+- 計画（/api/schedule）
+- 見積（/api/estimate）
+3) artifacts から生成ファイルをダウンロード

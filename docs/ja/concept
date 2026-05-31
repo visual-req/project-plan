@@ -1,0 +1,16 @@
+# コンセプト
+
+本プロジェクトは「要件 Word（.docx）」を次の成果物へ変換します：
+
+1) 分解（ユーザーストーリー）
+- stories 配列を出力
+- 各ストーリー：id、module、feature、title、user_story、acceptance_criteria、priority、dependencies、notes
+
+2) 計画（ユーザーストーリーマップ）
+- backbone（主な活動）+ releases（リリース）+ themes（テーマ）
+- themes.story_ids は分解結果の id を参照
+
+3) 見積（標準見積表）
+- 各 story：複雑度、開発/テスト/PM 日数、リスク、前提
+
+フロントは表示と操作、バックエンドは Word 解析・JSON 生成・（任意で）LLM 呼び出しを担当します。

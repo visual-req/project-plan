@@ -1,0 +1,16 @@
+# 概念
+
+本项目把“原始需求 Word 文档（.docx）”转成三类可交付产物：
+
+1) 分解（用户故事）
+- 输出 stories 数组
+- 每条故事包含：id、module、feature、title、user_story、acceptance_criteria、priority、dependencies、notes
+
+2) 排期（用户故事地图）
+- 输出 backbone（主活动流）+ releases（版本）+ themes（主题）
+- themes.story_ids 引用分解阶段的用户故事 id
+
+3) 估算（标准估算表）
+- 对每条 story 给出：复杂度、开发/测试/产品天数、风险、假设
+
+前端负责交互与展示，后端负责解析 Word、生成结构化 JSON、以及（可选）调用大模型。

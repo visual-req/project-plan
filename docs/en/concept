@@ -1,0 +1,16 @@
+# Concept
+
+This project converts a Word requirements document (.docx) into three deliverables:
+
+1) Decompose (User Stories)
+- Outputs a stories array
+- Each story includes: id, module, feature, title, user_story, acceptance_criteria, priority, dependencies, notes
+
+2) Schedule (User Story Map)
+- Outputs backbone + releases + themes
+- themes.story_ids reference story ids from decomposition
+
+3) Estimate (Standard estimation table)
+- For each story: complexity, dev/test/PM days, risk, assumptions
+
+The frontend handles interaction and visualization. The backend parses Word, generates JSON, and (optionally) calls an OpenAI-compatible LLM.

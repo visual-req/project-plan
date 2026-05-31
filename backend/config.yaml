@@ -1,0 +1,15 @@
+paths:
+  work_dir: /work
+  inputs_dir: /work/inputs
+  outputs_dir: /work/outputs
+  meta_dir: /work/meta
+
+llm:
+  enabled: true
+  base_url: https://api.openai.com/v1
+  api_key: ""
+  model: gpt-4.1-mini
+  temperature: 0.2
+  max_tokens: 2000
+  timeout_seconds: 60
+  force_json: true

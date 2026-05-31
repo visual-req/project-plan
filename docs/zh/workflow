@@ -1,0 +1,24 @@
+# 工作流
+
+## 端到端流程
+
+1) 上传 docx
+- 前端调用 /api/upload
+- 后端保存 inputs_dir/{doc_id}.docx
+- 后端解析出纯文本 requirement.txt 保存到 outputs_dir/{doc_id}/
+
+2) 分解
+- 前端调用 /api/decompose（可带 lang=zh-CN/ja-JP/en-US）
+- 后端执行 backend/decompose_service.py，并把结果落盘
+
+3) 排期
+- 前端调用 /api/schedule（可带 lang）
+- 后端执行 backend/schedule_service.py，并把结果落盘
+
+4) 估算
+- 前端调用 /api/estimate（可带 lang）
+- 后端执行 backend/estimate_service.py，并把结果落盘
+
+## 缓存
+
+同一个 doc_id + lang，会复用已落盘的 json，避免重复调用大模型。

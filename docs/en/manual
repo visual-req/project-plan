@@ -1,0 +1,24 @@
+# Manual
+
+## Languages
+
+- Use the language selector on the top-right: 中文 / 日本語 / English
+- APIs accept lang in request body (zh-CN/ja-JP/en-US) to control prompt output language
+
+## Voice
+
+- Use the voice dropdown and Speak/Stop on the top-right
+- Uses browser SpeechSynthesis (hidden if not supported)
+
+## FAQ
+
+### No LLM calls
+
+By default llm.enabled=false, so mock output is used.
+To enable real LLM output:
+- llm.enabled=true
+- set llm.base_url / llm.api_key / llm.model
+
+### module/feature is empty
+
+Decomposition expects module/feature fields. Check prompt and model output.

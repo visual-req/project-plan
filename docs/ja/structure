@@ -1,0 +1,27 @@
+# 構成
+
+## backend/
+
+- main.py：API と静的配信
+- serve.py：起動エントリ（--config 対応）
+- app_config.py：config.yaml 読み込みとディレクトリ準備
+- doc_parser.py：docx -> テキスト
+- decompose_service.py：分解ロジック + プロンプト
+- schedule_service.py：計画ロジック + プロンプト
+- estimate_service.py：見積ロジック + プロンプト
+- llm_client.py：OpenAI-compatible 呼び出し + mock
+- storage.py：JSON の読み書き
+
+## frontend/
+
+- public/index.html：エントリ（CDN で Vue/AntD/dayjs）
+- src/main.js：SFC Loader 起動
+- src/App.vue：Header + 作業エリア
+- src/components/：共通コンポーネント
+- src/views/：分解/計画/見積
+
+## scripts/
+
+- start.sh：バックエンド起動（フロントも配信）
+- start_backend.sh：同上
+- start_frontend.sh：同上（フロントはバックが配信）

@@ -1,0 +1,41 @@
+# 快速开始
+
+## 启动
+
+```bash
+./scripts/start.sh
+```
+
+默认启动端口 8010，打开：http://localhost:8010/
+
+## 指定配置文件（外部 config.yaml）
+
+```bash
+CONFIG=/path/to/config.yaml ./scripts/start.sh
+```
+
+或直接运行：
+
+```bash
+.venv/bin/python -m backend.serve --config /path/to/config.yaml --port 8010
+```
+
+## 配置大模型
+
+1) 复制配置文件
+- config.example.yaml -> config.yaml
+
+2) 关键字段
+- llm.enabled: true
+- llm.base_url: OpenAI-compatible API 地址（例如 https://api.openai.com/v1）
+- llm.api_key: 密钥
+- llm.model: 模型名
+
+## 使用流程
+
+1) 上传 .docx 需求文档（/api/upload）
+2) 点击按钮：
+- 分解（/api/decompose）
+- 排期（/api/schedule）
+- 估算（/api/estimate）
+3) 下载落盘文件（artifacts）

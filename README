@@ -1,0 +1,53 @@
+# Project Plan Analyzer
+
+一个用于“需求分解 / 排期（用户故事地图）/ 估算”的轻量工具：
+- 前端：Vue 3 + Ant Design Vue（CDN 方式，无需 Node 构建）
+- 后端：Python FastAPI，支持调用 OpenAI-compatible 大模型
+- 过程数据：以 JSON/txt 形式落盘到 /work/inputs、/work/outputs（若无权限创建 /work，会回退到项目内 ./work）
+
+## 目录结构
+
+- backend/：后端服务（FastAPI）
+- frontend/：前端静态页面（由后端托管）
+- config.yaml：运行时配置（模型、路径）
+- config.example.yaml：配置示例（复制后修改）
+
+## 快速开始
+
+1) 准备配置
+- 复制 config.example.yaml 为 config.yaml（或直接编辑已有的 config.yaml）
+- 如需调用大模型：设置 llm.enabled=true 并填写 llm.api_key / llm.base_url
+
+2) 安装后端依赖并启动
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r backend/requirements.txt
+.venv/bin/python -m uvicorn backend.main:app --host 0.0.0.0 --port 8010
+```
+
+3) 打开页面
+
+- http://localhost:8010/
+
+4) 使用方式
+
+- 上传 Word（.docx）原始需求文档
+- 点击按钮：
+  - 分解：生成用户故事表（含 AC 等）
+  - 排期：生成用户故事地图结构（Backbone + Releases/Themes）
+  - 估算：生成标准估算表
+- 结果与过程数据可通过页面中的 artifact 链接下载
+
+## API
+
+- GET /api/health
+- POST /api/upload (multipart/form-data, file=.docx)
+- POST /api/decompose {"doc_id": "..."}
+- POST /api/schedule {"doc_id": "..."}
+- POST /api/estimate {"doc_id": "..."}
+- GET /api/artifacts/{doc_id}/{name}
+
+## License
+
+MIT，见 LICENSE

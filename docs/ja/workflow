@@ -1,0 +1,20 @@
+# ワークフロー
+
+1) docx アップロード
+- フロント：/api/upload
+- バック：inputs_dir/{doc_id}.docx を保存
+- requirement.txt を outputs_dir/{doc_id}/ に保存
+
+2) 分解
+- /api/decompose（lang=zh-CN/ja-JP/en-US を指定可能）
+- backend/decompose_service.py を実行し、結果を保存
+
+3) 計画
+- /api/schedule（lang 指定可能）
+- backend/schedule_service.py を実行し、結果を保存
+
+4) 見積
+- /api/estimate（lang 指定可能）
+- backend/estimate_service.py を実行し、結果を保存
+
+同じ doc_id + lang は保存済み json を再利用します。

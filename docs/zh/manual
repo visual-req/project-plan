@@ -1,0 +1,24 @@
+# 手册
+
+## 多语言
+
+- 前端右上角可选择中文/日文/英文
+- 后端接口支持请求体携带 lang（zh-CN/ja-JP/en-US），用于提示词输出语言
+
+## 语音
+
+- 前端右上角提供语音与发音人选择
+- 使用浏览器 SpeechSynthesis（若浏览器不支持则不显示）
+
+## 常见问题
+
+### 1) 没有调用大模型
+
+默认 llm.enabled=false，会走 mock 输出。
+要启用真实大模型：
+- llm.enabled=true
+- 配置 llm.base_url / llm.api_key / llm.model
+
+### 2) 看不到分解的“模块/功能”
+
+分解结果每条故事包含 module/feature 字段。若模型未返回，检查提示词与模型输出。
