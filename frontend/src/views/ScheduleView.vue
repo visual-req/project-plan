@@ -1,7 +1,7 @@
 <template>
   <a-card>
     <div v-if="!schedule" class="empty">
-      <a-typography-text type="secondary">{{ t("scheduleHint") }}</a-typography-text>
+      <a-typography-text>{{ t("scheduleHint") }}</a-typography-text>
     </div>
 
     <div v-else class="story-map-grid">
@@ -35,7 +35,7 @@
       </div>
 
       <div v-else class="empty">
-        <a-typography-text type="secondary">排期数据结构不符合迭代泳道格式，请重新点击“排期”。</a-typography-text>
+        <a-typography-text>排期数据结构不符合迭代泳道格式，请重新点击“排期”。</a-typography-text>
       </div>
     </div>
   </a-card>

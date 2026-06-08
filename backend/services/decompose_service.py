@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from backend.app_config import AppConfig
-from backend.llm_client import chat_completions_json
+from backend.llm_client import LlmOutputParseError, chat_completions_json
 from backend.storage import atomic_write_json, atomic_write_text, read_json
 
 SYSTEM_PROMPT = "你是严谨的需求分析助手，必须按要求只输出 JSON。"
@@ -74,7 +74,11 @@ async def run(config: AppConfig, requirement_text: str, paths: dict[str, Any], l
 
     user_prompt = build_prompt(requirement_text, lang)
 
-    result = await chat_completions_json(config.llm, SYSTEM_PROMPT, user_prompt)
+    try:
+        result = await chat_completions_json(config.llm, SYSTEM_PROMPT, user_prompt)
+    except LlmOutputParseError as e:
+        atomic_write_text(paths["llm_raw_decompose"], e.raw_text)
+        raise
     atomic_write_text(paths["llm_raw_decompose"], result.raw_text)
     data: dict[str, Any] = dict(result.data)
     data["_meta"] = {
@@ -88,4 +92,3 @@ async def run(config: AppConfig, requirement_text: str, paths: dict[str, Any], l
     }
     atomic_write_json(paths["decompose_json"], data)
     return data
-

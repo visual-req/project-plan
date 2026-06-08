@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import os
 from pathlib import Path
 from typing import Any
 
@@ -28,9 +29,32 @@ class LlmConfig:
 
 
 @dataclass(frozen=True)
+class JenkinsConfig:
+    enabled: bool
+    base_url: str
+    username: str
+    api_token: str
+    timeout_seconds: float
+    verify_ssl: bool
+
+
+@dataclass(frozen=True)
+class SonarConfig:
+    enabled: bool
+    base_url: str
+    token: str
+    organization: str
+    project_key: str
+    timeout_seconds: float
+    verify_ssl: bool
+
+
+@dataclass(frozen=True)
 class AppConfig:
     paths: PathsConfig
     llm: LlmConfig
+    jenkins: JenkinsConfig
+    sonar: SonarConfig
 
 
 def _deep_get(data: dict[str, Any], path: str, default: Any) -> Any:
@@ -71,12 +95,35 @@ def load_config(config_path: str | None = None) -> AppConfig:
     llm = LlmConfig(
         enabled=bool(_deep_get(data, "llm.enabled", False)),
         base_url=str(_deep_get(data, "llm.base_url", "")),
-        api_key=str(_deep_get(data, "llm.api_key", "")),
+        api_key=str(
+            _deep_get(data, "llm.api_key", "")
+            or os.environ.get("LLM_API_KEY", "")
+            or os.environ.get("OPENAI_API_KEY", "")
+        ),
         model=str(_deep_get(data, "llm.model", "gpt-4.1-mini")),
         temperature=float(_deep_get(data, "llm.temperature", 0.2)),
         max_tokens=int(_deep_get(data, "llm.max_tokens", 2000)),
         timeout_seconds=float(_deep_get(data, "llm.timeout_seconds", 60)),
         force_json=bool(_deep_get(data, "llm.force_json", True)),
+    )
+
+    jenkins = JenkinsConfig(
+        enabled=bool(_deep_get(data, "jenkins.enabled", False)),
+        base_url=str(_deep_get(data, "jenkins.base_url", "") or os.environ.get("JENKINS_BASE_URL", "")),
+        username=str(_deep_get(data, "jenkins.username", "") or os.environ.get("JENKINS_USERNAME", "")),
+        api_token=str(_deep_get(data, "jenkins.api_token", "") or os.environ.get("JENKINS_API_TOKEN", "")),
+        timeout_seconds=float(_deep_get(data, "jenkins.timeout_seconds", 30)),
+        verify_ssl=bool(_deep_get(data, "jenkins.verify_ssl", True)),
+    )
+
+    sonar = SonarConfig(
+        enabled=bool(_deep_get(data, "sonar.enabled", False)),
+        base_url=str(_deep_get(data, "sonar.base_url", "") or os.environ.get("SONAR_BASE_URL", "")),
+        token=str(_deep_get(data, "sonar.token", "") or os.environ.get("SONAR_TOKEN", "")),
+        organization=str(_deep_get(data, "sonar.organization", "") or os.environ.get("SONAR_ORGANIZATION", "")),
+        project_key=str(_deep_get(data, "sonar.project_key", "") or os.environ.get("SONAR_PROJECT_KEY", "")),
+        timeout_seconds=float(_deep_get(data, "sonar.timeout_seconds", 30)),
+        verify_ssl=bool(_deep_get(data, "sonar.verify_ssl", True)),
     )
 
     try:
@@ -95,4 +142,4 @@ def load_config(config_path: str | None = None) -> AppConfig:
 
     paths = PathsConfig(work_dir=work_dir, inputs_dir=inputs_dir, outputs_dir=outputs_dir, meta_dir=meta_dir)
 
-    return AppConfig(paths=paths, llm=llm)
+    return AppConfig(paths=paths, llm=llm, jenkins=jenkins, sonar=sonar)

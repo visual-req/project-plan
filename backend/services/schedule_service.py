@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from backend.app_config import AppConfig
-from backend.llm_client import chat_completions_json
+from backend.llm_client import LlmOutputParseError, chat_completions_json
 from backend.storage import atomic_write_json, atomic_write_text, read_json
 
 SYSTEM_PROMPT = "你是严谨的排期与故事地图助手，必须按要求只输出 JSON。"
@@ -87,7 +87,11 @@ async def run(
 
     user_prompt = build_prompt(requirement_text, stories_json, lang)
 
-    result = await chat_completions_json(config.llm, SYSTEM_PROMPT, user_prompt)
+    try:
+        result = await chat_completions_json(config.llm, SYSTEM_PROMPT, user_prompt)
+    except LlmOutputParseError as e:
+        atomic_write_text(paths["llm_raw_schedule"], e.raw_text)
+        raise
     atomic_write_text(paths["llm_raw_schedule"], result.raw_text)
     data: dict[str, Any] = dict(result.data)
     data["_meta"] = {
@@ -101,4 +105,3 @@ async def run(
     }
     atomic_write_json(paths["schedule_json"], data)
     return data
-

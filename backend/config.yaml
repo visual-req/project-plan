@@ -13,3 +13,20 @@ llm:
   max_tokens: 2000
   timeout_seconds: 60
   force_json: true
+
+jenkins:
+  enabled: false
+  base_url: ""
+  username: ""
+  api_token: ""
+  timeout_seconds: 30
+  verify_ssl: true
+
+sonar:
+  enabled: false
+  base_url: ""
+  token: ""
+  organization: ""
+  project_key: ""
+  timeout_seconds: 30
+  verify_ssl: true

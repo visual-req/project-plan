@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from typing import Any
 
 import httpx
+import codecs
+import yaml
 
 from .app_config import LlmConfig
 
@@ -16,14 +18,176 @@ class LlmResult:
     raw_text: str
 
 
+class LlmOutputParseError(ValueError):
+    def __init__(self, message: str, raw_text: str) -> None:
+        super().__init__(message)
+        self.raw_text = raw_text
+
+
+def _truncate(text: str, limit: int = 800) -> str:
+    text = text.strip()
+    if len(text) <= limit:
+        return text
+    return text[:limit] + "..."
+
+
+def _extract_upstream_error_message(text: str) -> str:
+    t = text.strip()
+    if not t:
+        return ""
+    try:
+        data = json.loads(t)
+    except Exception:
+        return _truncate(t)
+    if isinstance(data, dict):
+        err = data.get("error")
+        if isinstance(err, dict) and isinstance(err.get("message"), str):
+            return _truncate(err["message"])
+        if isinstance(data.get("message"), str):
+            return _truncate(str(data["message"]))
+        if isinstance(data.get("detail"), str):
+            return _truncate(str(data["detail"]))
+    return _truncate(t)
+
+
+def _format_decode_error(candidate: str, e: json.JSONDecodeError) -> str:
+    start = max(0, e.pos - 200)
+    end = min(len(candidate), e.pos + 200)
+    snippet = candidate[start:end].replace("\n", "\\n")
+    return (
+        f"{e.msg} (line {e.lineno} column {e.colno} char {e.pos})"
+        f"，输出片段：{_truncate(snippet, 450)}"
+    )
+
+
+def _repair_json_like(text: str) -> str:
+    s = text
+    if re.match(r"^\s*\{\\\"", s) and '\\"' in s and '"stories"' not in s:
+        try:
+            unescaped = codecs.decode(s, "unicode_escape")
+            if re.match(r'^\s*\{".*"\s*:', unescaped) or '"stories"' in unescaped:
+                s = unescaped
+        except Exception:
+            pass
+
+    s = re.sub(r",(\s*[\]}])", r"\1", s)
+    s = re.sub(r'\\\\"(?=\s*[,}\]])', r'"', s)
+    s = re.sub(r'\\"(?=\s*[,}\]])', r'"', s)
+    s = re.sub(r'\\"(?=\s*\n\s*")', r'"', s)
+    return s
+
+
+def _salvage_array_of_objects(text: str, key: str) -> list[dict[str, Any]] | None:
+    m = re.search(rf'"{re.escape(key)}"\s*:\s*\[', text)
+    if not m:
+        return None
+    i = m.end()
+
+    items: list[dict[str, Any]] = []
+    n = len(text)
+    while i < n:
+        while i < n and text[i] in " \t\r\n,":
+            i += 1
+        if i >= n:
+            break
+        if text[i] == "]":
+            break
+        if text[i] != "{":
+            i += 1
+            continue
+
+        start = i
+        i += 1
+        depth = 1
+        in_str = False
+        esc = False
+        while i < n and depth > 0:
+            ch = text[i]
+            if in_str:
+                if esc:
+                    esc = False
+                elif ch == "\\":
+                    esc = True
+                elif ch == '"':
+                    in_str = False
+            else:
+                if ch == '"':
+                    in_str = True
+                elif ch == "{":
+                    depth += 1
+                elif ch == "}":
+                    depth -= 1
+            i += 1
+
+        if depth != 0:
+            break
+
+        obj_text = text[start:i]
+        obj_repaired = _repair_json_like(obj_text)
+        try:
+            obj = json.loads(obj_repaired)
+        except Exception:
+            continue
+        if isinstance(obj, dict):
+            items.append(obj)
+
+    return items or None
+
+
+def _salvage_partial_result(text: str) -> dict[str, Any] | None:
+    stories = _salvage_array_of_objects(text, "stories")
+    if stories is not None:
+        return {"stories": stories}
+    rows = _salvage_array_of_objects(text, "rows")
+    if rows is not None:
+        return {"rows": rows}
+    return None
+
+
 def _extract_json_object(text: str) -> dict[str, Any]:
     text = text.strip()
     if text.startswith("{") and text.endswith("}"):
-        return json.loads(text)
-    match = re.search(r"\{[\s\S]*\}", text)
-    if not match:
-        raise ValueError("No JSON object found in model output")
-    return json.loads(match.group(0))
+        candidate = text
+    else:
+        match = re.search(r"\{[\s\S]*\}", text)
+        if not match:
+            raise ValueError("No JSON object found in model output")
+        candidate = match.group(0)
+
+    json_error: json.JSONDecodeError | None = None
+    candidates: list[str] = []
+    candidates.append(candidate)
+    repaired = _repair_json_like(candidate)
+    if repaired != candidate:
+        candidates.append(repaired)
+
+    for c in candidates:
+        try:
+            data = json.loads(c)
+            break
+        except json.JSONDecodeError as e:
+            json_error = e
+            data = None
+    else:
+        for c in candidates:
+            try:
+                data = yaml.safe_load(c)
+                break
+            except Exception:
+                data = None
+
+        if data is None:
+            if json_error is None:
+                raise ValueError("大模型输出解析失败：无法解析为 JSON 对象")
+            best = repaired if repaired != candidate else candidate
+            salvaged = _salvage_partial_result(best)
+            if salvaged is not None:
+                return salvaged
+            raise ValueError(f"大模型输出解析失败：{_format_decode_error(best, json_error)}") from json_error
+
+    if not isinstance(data, dict):
+        raise ValueError(f"Model output is not a JSON object (type={type(data).__name__})")
+    return data
 
 
 async def chat_completions_json(
@@ -33,6 +197,10 @@ async def chat_completions_json(
 ) -> LlmResult:
     if not config.enabled:
         raise RuntimeError("LLM is disabled (llm.enabled=false)")
+    if not config.api_key:
+        raise RuntimeError(
+            "未配置大模型 API_KEY。请执行：export LLM_API_KEY=\"你的KEY\" 然后重新启动服务。"
+        )
 
     base_url = config.base_url.rstrip("/")
     url = f"{base_url}/chat/completions"
@@ -54,16 +222,49 @@ async def chat_completions_json(
 
     timeout = httpx.Timeout(config.timeout_seconds)
     async with httpx.AsyncClient(timeout=timeout) as client:
-        resp = await client.post(url, headers=headers, json=payload)
-        resp.raise_for_status()
-        body = resp.json()
+        try:
+            resp = await client.post(url, headers=headers, json=payload)
+            resp.raise_for_status()
+            body = resp.json()
+        except httpx.HTTPStatusError as e:
+            status = e.response.status_code
+            upstream = _extract_upstream_error_message(e.response.text)
+            hint = ""
+            if status in (401, 403):
+                hint = "请检查 LLM_API_KEY/OPENAI_API_KEY 是否正确，以及 llm.base_url 是否匹配。"
+            elif status == 404:
+                hint = "请检查 llm.base_url 与 llm.model 是否正确。"
+            elif status == 429:
+                hint = "可能触发限流/配额不足/并发过高，请稍后重试或降低并发。"
+            elif status >= 500:
+                hint = "上游服务异常，请稍后重试。"
+
+            msg = f"大模型调用失败：HTTP {status}"
+            if upstream:
+                msg += f"，上游返回：{upstream}"
+            if hint:
+                msg += f"。{hint}"
+            raise RuntimeError(msg) from e
+        except httpx.TimeoutException as e:
+            raise RuntimeError(
+                f"大模型调用失败：请求超时（timeout_seconds={config.timeout_seconds}）。"
+                "请检查网络/上游服务，或适当增大 timeout_seconds。"
+            ) from e
+        except httpx.RequestError as e:
+            raise RuntimeError(
+                f"大模型调用失败：无法连接到上游（{type(e).__name__}）。"
+                "请检查 llm.base_url、网络代理、DNS、证书等。"
+            ) from e
 
     content = (
         body.get("choices", [{}])[0]
         .get("message", {})
         .get("content", "")
     )
-    data = _extract_json_object(content)
+    try:
+        data = _extract_json_object(content)
+    except ValueError as e:
+        raise LlmOutputParseError(str(e), raw_text=content) from e
     return LlmResult(data=data, raw_text=content)
 
 

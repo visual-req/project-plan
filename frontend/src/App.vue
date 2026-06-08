@@ -102,6 +102,8 @@ export default {
         save: "保存",
         refresh: "刷新",
         llmConnFailed: "服务不可用：无法连接后端或大模型",
+        needDecomposeBeforeSchedule: "需要先分解，才能排期",
+        needDecomposeBeforeEstimate: "需要先分解，才能估算",
       },
       "ja-JP": {
         chooseDoc: "Word(.docx) を選択",
@@ -130,6 +132,8 @@ export default {
         save: "保存",
         refresh: "更新",
         llmConnFailed: "サービスが利用できません：バックエンドまたはLLMに接続できません",
+        needDecomposeBeforeSchedule: "先に分解してください。分解後に計画できます",
+        needDecomposeBeforeEstimate: "先に分解してください。分解後に見積できます",
       },
       "en-US": {
         chooseDoc: "Choose Word(.docx)",
@@ -158,6 +162,8 @@ export default {
         save: "Save",
         refresh: "Refresh",
         llmConnFailed: "Service unavailable: cannot reach backend or LLM",
+        needDecomposeBeforeSchedule: "Please decompose first, then schedule",
+        needDecomposeBeforeEstimate: "Please decompose first, then estimate",
       },
     };
 
@@ -275,6 +281,7 @@ export default {
       state.running.decompose = true;
       try {
         state.decompose = await postJson("/api/decompose", { doc_id: state.doc.id, lang: ui.lang });
+        ui.activeTab = "decompose";
       } catch (e) {
         state.error = normalizeError(e);
       } finally {
@@ -284,9 +291,15 @@ export default {
 
     async function runSchedule() {
       state.error = "";
+      if (!state.decompose || !Array.isArray(state.decompose.stories) || state.decompose.stories.length === 0) {
+        state.error = t("needDecomposeBeforeSchedule");
+        ui.activeTab = "decompose";
+        return;
+      }
       state.running.schedule = true;
       try {
         state.schedule = await postJson("/api/schedule", { doc_id: state.doc.id, lang: ui.lang });
+        ui.activeTab = "schedule";
       } catch (e) {
         state.error = normalizeError(e);
       } finally {
@@ -296,9 +309,15 @@ export default {
 
     async function runEstimate() {
       state.error = "";
+      if (!state.decompose || !Array.isArray(state.decompose.stories) || state.decompose.stories.length === 0) {
+        state.error = t("needDecomposeBeforeEstimate");
+        ui.activeTab = "decompose";
+        return;
+      }
       state.running.estimate = true;
       try {
         state.estimate = await postJson("/api/estimate", { doc_id: state.doc.id, lang: ui.lang });
+        ui.activeTab = "estimate";
       } catch (e) {
         state.error = normalizeError(e);
       } finally {

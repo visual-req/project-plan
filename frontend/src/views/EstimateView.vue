@@ -85,7 +85,7 @@
         <div style="margin-top: 12px;">
           <a-space>
             <a-button type="primary" @click="saveStandards">{{ t("save") }}</a-button>
-            <a-button @click="reloadStandards">{{ t("refresh") }}</a-button>
+            <a-button type="primary" @click="reloadStandards">{{ t("refresh") }}</a-button>
           </a-space>
         </div>
       </a-spin>

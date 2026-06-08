@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import asyncio
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -91,14 +92,58 @@ def _load_requirement_text(doc_id: str) -> str:
 
 
 def _to_http_exception(e: Exception) -> HTTPException:
+    def _is_empty_llm_failure_message(text: str) -> bool:
+        cleaned = text.replace("\u200b", "").replace("\ufeff", "")
+        return bool(re.fullmatch(r"\s*大模型调用失败：\s*", cleaned))
+
+    def _derive_reason_from_chain(exc: BaseException) -> str:
+        cur: BaseException | None = exc.__cause__ or exc.__context__
+        seen: set[int] = set()
+        while cur is not None and id(cur) not in seen:
+            seen.add(id(cur))
+            m = str(cur).strip()
+            if m and not _is_empty_llm_failure_message(m):
+                return m
+            cur = cur.__cause__ or cur.__context__
+        return ""
+
     if isinstance(e, HTTPException):
+        detail = e.detail
+        if isinstance(detail, str) and _is_empty_llm_failure_message(detail):
+            derived = _derive_reason_from_chain(e)
+            if derived:
+                return HTTPException(status_code=502, detail=f"大模型调用失败：{derived}")
+            return HTTPException(
+                status_code=502,
+                detail="大模型调用失败：未知原因。请检查 LLM_API_KEY/OPENAI_API_KEY、llm.base_url、网络连接后重试。",
+            )
         return e
     if isinstance(e, httpx.HTTPError):
-        return HTTPException(status_code=502, detail=f"大模型调用失败：{e}")
+        reason = str(e).strip()
+        if not reason:
+            reason = f"{type(e).__name__}（错误信息为空）"
+        return HTTPException(status_code=502, detail=f"大模型调用失败：{reason}")
     if isinstance(e, (json.JSONDecodeError, ValueError)):
-        return HTTPException(status_code=502, detail=f"大模型输出解析失败：{e}")
+        msg = str(e).strip()
+        if msg.startswith("大模型输出解析失败："):
+            return HTTPException(status_code=502, detail=msg)
+        return HTTPException(status_code=502, detail=f"大模型输出解析失败：{msg or type(e).__name__}")
     msg = str(e)
+    if "API_KEY" in msg or "api_key" in msg or "LLM_API_KEY" in msg:
+        return HTTPException(status_code=400, detail=msg)
+    if msg.startswith("大模型调用失败："):
+        if _is_empty_llm_failure_message(msg):
+            derived = _derive_reason_from_chain(e)
+            if derived:
+                return HTTPException(status_code=502, detail=f"大模型调用失败：{derived}")
+            return HTTPException(
+                status_code=502,
+                detail="大模型调用失败：未知原因。请检查 LLM_API_KEY/OPENAI_API_KEY、llm.base_url、网络连接后重试。",
+            )
+        return HTTPException(status_code=502, detail=msg)
     if "LLM" in msg or "chat/completions" in msg:
+        if msg.startswith("大模型调用失败："):
+            return HTTPException(status_code=502, detail=msg)
         return HTTPException(status_code=502, detail=f"大模型调用失败：{msg}")
     return HTTPException(status_code=500, detail=msg or "Internal Server Error")
 
@@ -107,6 +152,7 @@ def _to_http_exception(e: Exception) -> HTTPException:
 async def _ensure_decompose(doc_id: str, lang: str | None) -> dict[str, Any]:
     requirement_text = _load_requirement_text(doc_id)
     paths = _paths_for_doc(doc_id, lang)
+    return await run_decompose(CONFIG, requirement_text, paths, lang)
 
 
 @app.get("/api/health")
@@ -166,7 +212,9 @@ async def schedule(req: DocRequest) -> JSONResponse:
     try:
         requirement_text = _load_requirement_text(req.doc_id)
         paths = _paths_for_doc(req.doc_id, req.lang)
-        decompose_data = await _ensure_decompose(req.doc_id, req.lang)
+        if not paths["decompose_json"].exists():
+            raise HTTPException(status_code=400, detail="需要先分解，才能排期")
+        decompose_data = json.loads(paths["decompose_json"].read_text(encoding="utf-8"))
         stories_json = Path(paths["decompose_json"]).read_text(encoding="utf-8")
         data = await run_schedule(CONFIG, requirement_text, stories_json, decompose_data, paths, req.lang)
         return JSONResponse(content=data)
@@ -179,7 +227,9 @@ async def estimate(req: DocRequest) -> JSONResponse:
     try:
         requirement_text = _load_requirement_text(req.doc_id)
         paths = _paths_for_doc(req.doc_id, req.lang)
-        decompose_data = await _ensure_decompose(req.doc_id, req.lang)
+        if not paths["decompose_json"].exists():
+            raise HTTPException(status_code=400, detail="需要先分解，才能估算")
+        decompose_data = json.loads(paths["decompose_json"].read_text(encoding="utf-8"))
         stories_json = Path(paths["decompose_json"]).read_text(encoding="utf-8")
         data = await run_estimate(CONFIG, requirement_text, stories_json, decompose_data, paths, req.lang)
         return JSONResponse(content=data)

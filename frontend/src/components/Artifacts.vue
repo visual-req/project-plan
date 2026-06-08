@@ -1,6 +1,6 @@
 <template>
   <div v-if="items.length" class="artifacts">
-    <a-typography-text type="secondary">{{ t("artifacts") }}</a-typography-text>
+    <a-typography-text>{{ t("artifacts") }}</a-typography-text>
     <a-space wrap>
       <a
         v-for="a in items"

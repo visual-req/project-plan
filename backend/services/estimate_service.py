@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from backend.app_config import AppConfig
-from backend.llm_client import chat_completions_json
+from backend.llm_client import LlmOutputParseError, chat_completions_json
 from backend.meta_service import load_estimation_standards
 from backend.storage import atomic_write_json, atomic_write_text, read_json
 
@@ -98,7 +98,11 @@ async def run(
         requirement_text, stories_json, json.dumps(standards, ensure_ascii=False), lang
     )
 
-    result = await chat_completions_json(config.llm, SYSTEM_PROMPT, user_prompt)
+    try:
+        result = await chat_completions_json(config.llm, SYSTEM_PROMPT, user_prompt)
+    except LlmOutputParseError as e:
+        atomic_write_text(paths["llm_raw_estimate"], e.raw_text)
+        raise
     atomic_write_text(paths["llm_raw_estimate"], result.raw_text)
     data: dict[str, Any] = dict(result.data)
     data["_meta"] = {
@@ -112,4 +116,3 @@ async def run(
     }
     atomic_write_json(paths["estimate_json"], data)
     return data
-
