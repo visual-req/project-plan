@@ -41,7 +41,7 @@
 
       <a-spin :spinning="standardsLoading || standardsSaving">
         <a-space v-if="standards && standards.types && standards.types.length" style="margin-bottom: 12px;">
-          <a-typography-text>类型：</a-typography-text>
+          <a-typography-text>{{ t("typeLabel") }}</a-typography-text>
           <a-select
             style="width: 240px;"
             :value="selectedType"

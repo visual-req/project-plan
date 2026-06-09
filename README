@@ -1,4 +1,19 @@
-# Project Plan Analyzer
+<h3 align="center">project-plan</h3>
+<p align="center">一个用于“需求分解 / 排期（用户故事地图）/ 估算”的轻量工具（前端 Vue 3 + Ant Design Vue，后端 FastAPI，支持 OpenAI-compatible 大模型）。</p>
+<p align="center">
+  <a href="https://github.com/visual-req/project-plan/releases"><img src="https://img.shields.io/github/v/release/visual-req/project-plan" alt="Release"></a>
+  <a href="https://github.com/visual-req/project-plan"><img src="https://img.shields.io/github/stars/visual-req/project-plan?style=flat-square" alt="Stars"></a>
+  <a href="https://github.com/visual-req/project-plan/issues"><img src="https://img.shields.io/github/issues/visual-req/project-plan?style=flat-square" alt="Issues"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License"></a>
+</p>
+<p align="center">
+  <a href="docs/zh/getting-started">快速开始</a> · <a href="docs/zh/workflow">工作流</a> · <a href="docs/zh/manual">手册</a>
+  <br/>
+  <a href="docs/en/getting-started">Getting started</a> · <a href="docs/en/manual">Manual</a> · <a href="docs/ja/manual">マニュアル</a>
+</p>
+<hr />
+
+License: MIT ([LICENSE](LICENSE))
 
 一个用于“需求分解 / 排期（用户故事地图）/ 估算”的轻量工具：
 - 前端：Vue 3 + Ant Design Vue（CDN 方式，无需 Node 构建）

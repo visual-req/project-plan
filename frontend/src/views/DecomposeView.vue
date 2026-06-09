@@ -33,7 +33,7 @@ export default {
   computed: {
     columns() {
       return [
-        { title: "ID", dataIndex: "id", key: "id", width: 90 },
+        { title: this.t("id"), dataIndex: "id", key: "id", width: 90 },
         { title: this.t("module"), dataIndex: "module", key: "module", width: 140 },
         { title: this.t("feature"), dataIndex: "feature", key: "feature", width: 180 },
         { title: this.t("title"), dataIndex: "title", key: "title", width: 220 },

@@ -35,7 +35,7 @@
       </div>
 
       <div v-else class="empty">
-        <a-typography-text>排期数据结构不符合迭代泳道格式，请重新点击“排期”。</a-typography-text>
+        <a-typography-text>{{ t("scheduleInvalid") }}</a-typography-text>
       </div>
     </div>
   </a-card>

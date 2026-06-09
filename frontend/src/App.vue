@@ -1,7 +1,7 @@
 <template>
   <a-layout class="layout">
     <a-layout-header class="header">
-      <div class="header-left">项目计划分析器</div>
+      <div class="header-left">{{ t("appTitle") }}</div>
       <div class="header-right">
         <a-space>
           <a-select
@@ -76,12 +76,15 @@ export default {
   setup() {
     const dict = {
       "zh-CN": {
+        appTitle: "项目计划分析器",
+        id: "ID",
         chooseDoc: "选择 Word(.docx)",
         decompose: "分解",
         schedule: "排期",
         estimate: "估算",
         artifacts: "过程数据（落盘 JSON / txt）：",
         scheduleHint: "点击“排期”生成用户故事地图。",
+        scheduleInvalid: "排期数据结构不符合迭代泳道格式，请重新点击“排期”。",
         module: "模块",
         feature: "功能",
         title: "标题",
@@ -90,6 +93,7 @@ export default {
         ac: "验收标准（AC）",
         notes: "备注：",
         assumptions: "假设：",
+        typeLabel: "类型：",
         storyId: "故事",
         complexity: "复杂度",
         devDays: "开发(天)",
@@ -106,12 +110,15 @@ export default {
         needDecomposeBeforeEstimate: "需要先分解，才能估算",
       },
       "ja-JP": {
+        appTitle: "プロジェクト計画アナライザー",
+        id: "ID",
         chooseDoc: "Word(.docx) を選択",
         decompose: "分解",
         schedule: "計画",
         estimate: "見積",
         artifacts: "生成データ（JSON / txt）：",
         scheduleHint: "「計画」をクリックしてユーザーストーリーマップを生成します。",
+        scheduleInvalid: "計画データの形式が想定と異なります。もう一度「計画」をクリックしてください。",
         module: "モジュール",
         feature: "機能",
         title: "タイトル",
@@ -120,6 +127,7 @@ export default {
         ac: "受入条件（AC）",
         notes: "備考：",
         assumptions: "前提：",
+        typeLabel: "タイプ：",
         storyId: "ストーリー",
         complexity: "複雑度",
         devDays: "開発(日)",
@@ -136,12 +144,15 @@ export default {
         needDecomposeBeforeEstimate: "先に分解してください。分解後に見積できます",
       },
       "en-US": {
+        appTitle: "Project Plan Analyzer",
+        id: "ID",
         chooseDoc: "Choose Word(.docx)",
         decompose: "Decompose",
         schedule: "Schedule",
         estimate: "Estimate",
         artifacts: "Artifacts (JSON / txt):",
         scheduleHint: 'Click "Schedule" to generate the story map.',
+        scheduleInvalid: 'Schedule output format is invalid. Please click "Schedule" again.',
         module: "Module",
         feature: "Feature",
         title: "Title",
@@ -150,6 +161,7 @@ export default {
         ac: "Acceptance Criteria",
         notes: "Notes:",
         assumptions: "Assumptions:",
+        typeLabel: "Type:",
         storyId: "Story",
         complexity: "Complexity",
         devDays: "Dev (days)",
